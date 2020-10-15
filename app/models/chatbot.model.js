@@ -2,13 +2,8 @@ const mongoose = require("mongoose");
 
 const ModelSchema = mongoose.Schema(
   {
-    content: {},
-  },
-  {
-    response: {},
-  },
-  {
-    timestamps: true,
+    type: {},
+    response: {}
   }
 );
 
