@@ -31,9 +31,7 @@ mongoose.connect("mongodb://<user>:<pass>@ds135522.mlab.com:35522/chatbotvisual"
 );
 
 app.get('/', (req, res) => {
-  res.json({
-    message: 'server is running'
-  })
+  res.json({ message: 'server is running' })
 })
 
 // routes

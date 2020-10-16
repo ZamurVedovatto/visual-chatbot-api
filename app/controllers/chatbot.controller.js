@@ -2,35 +2,185 @@ const ChatbotResponse = require("../models/chatbot.model.js");
 
 // Conversation Add
 exports.conversation = (req, res) => {
-  console.log(req.body);
-  // Validate request
   if (!req.body) {
-    return res.status(400).send({
-      message: "Chat input can not be empty",
-    });
+    return res.status(400).send({ message: "Chat input can not be empty", });
   }
-
-  let type = req.body.type;
-  let response = catchInputs(type);
-
-  // Create
-  const newResponse = new ChatbotResponse({
-    type,
-    response
-  });
-
-  // Save in the database
-  newResponse
-    .save()
-    .then((data) => {
-      res.send({data, response});
-    })
-    .catch((err) => {
-      res.status(500).send({
+  let content = req.body;
+  let response = catchInputs(content);
+  let newResponse = new ChatbotResponse({ response });
+  newResponse.save().then((data) => { res.send(response) })
+    .catch((err) => {res.status(500).send({
         message: err.message || "Some error occurred while creating the Chat.",
       });
     });
 };
+
+// fake IA rolando aqui
+function catchInputs({ content }) {
+  let responseType = null;
+  if (content.includes('text') || content.includes('stri')) {
+    responseType = 'text';
+  } else if (content.includes('selec') || content.includes('opç') || content.includes('opc')) {
+    responseType = 'select';
+  } else if (content.includes('link') || content.includes('sit') || content.includes('pagin') || content.includes('págin')) {
+    responseType = 'link';
+  } else if (content.includes('butt') || content.includes('botã') || content.includes('bota') || content.includes('botoe') || content.includes('botões')) {
+    responseType = 'button';
+  } else if (content.includes('list') || content.includes('tabel') || content.includes('table')) {
+    responseType = 'list';
+  }
+
+  switch (responseType) {
+    case 'text':
+      return responseSimpleText();
+    case 'select':
+      return responseSelect();
+    case 'link':
+      return responseLink();
+    case 'button':
+      return responseButton();
+    case 'list':
+      return responseList();
+    default:
+      return responseUndefined();
+  }
+}
+
+function responseSimpleText() {
+  return [
+    {
+      type: 'text',
+      content: 'simple text'
+    }
+  ];
+}
+
+function responseSelect() {
+  return [
+    {
+      type: 'text',
+      content: 'Aqui vão algumas opções. Selecione a que você quiser.'
+    },
+    {
+      type: 'select',
+      content: [
+        {
+          label: 'retorno a',
+          value: 'a'
+        },
+        {
+          label: 'retorno b',
+          value: 'b'
+        },
+        {
+          label: 'retorno c',
+          value: 'c'
+        },
+        {
+          label: 'retorno d',
+          value: 'd'
+        }
+      ]
+    }
+  ]
+}
+
+function responseLink() {
+  return [
+    {
+      type: 'text',
+      content: 'Links relacionados à sua pesquisa.'
+    },
+    {
+      type: 'link',
+      content: [
+        {
+          label: 'Prefeitura de Belo Horizonte',
+          value: 'https://www.uol.com.br'
+        },
+        {
+          label: 'COPASA',
+          value: 'https://www.globo.com'
+        },
+        {
+          label: 'CEMIG',
+          value: 'https://www.globo.com'
+        }
+      ]
+    }
+  ]
+}
+
+function responseButton() {
+  return [
+    {
+      type: 'text',
+      content: 'Escolha uma das opções abaixo para dar continuidade.'
+    },
+    {
+      type: 'button',
+      content: [
+        {
+          label: 'Option 1',
+          value: 'action1'
+        },
+        {
+          label: 'Option 2',
+          value: 'action2'
+        },
+        {
+          label: 'Option 3',
+          value: 'action3'
+        },
+        {
+          label: 'Option 4',
+          value: 'action4'
+        }
+      ]
+    },
+  ]
+}
+
+function responseList() {
+  return [
+    {
+      type: 'text',
+      content: 'Lista relacionada à sua pergunta.'
+    },
+    {
+      type: 'list',
+      content: [
+        {
+          label: 'List item a',
+        },
+        {
+          label: 'List item b',
+        },
+        {
+          label: 'List item c',
+        },
+        {
+          label: 'List item d',
+        }
+      ]
+    }
+  ]
+}
+
+function responseUndefined() {
+  return [
+    {
+      type: 'text',
+      content: 'Não entendi a sua pergunta'
+    }
+  ];
+}
+
+
+
+
+
+
 
 // Conversation Get All
 exports.getAll = async (req, res) => {
@@ -78,45 +228,3 @@ exports.deleteAll = (req, res) => {
     }
   });
 };
-
-
-function catchInputs(type) {
-    switch (type) {
-      case 'select':
-        return {
-          a: {
-            label: 'retorno a',
-            value: 'a'
-          },
-          b: {
-            label: 'retorno b',
-            value: 'b'
-          },
-        }
-      case 'botoes':
-        return {
-          botao1: {
-            label: 'botao1',
-            link: 'www1'
-          },
-          botao2: {
-            label: 'botao2',
-            link: 'www2'
-          },
-        }
-      case 'lista':
-        return [
-            'item1',
-            'item2',
-            'item3'
-          ]
-      case 'link':
-        return 'http://visual.com.br';
-      case 'texto':
-        return 'texto texto';
-      case 'image':
-        return 'https://46btcf3p9wmn3pbckq2c0s43-wpengine.netdna-ssl.com/wp-content/themes/visual-sistemas-eletronicos/assets/img/visual.svg'
-      default:
-        return 'não entendi sua pergunta'
-    }
-}

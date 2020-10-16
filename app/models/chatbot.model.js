@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 
 const ModelSchema = mongoose.Schema(
   {
-    type: {},
     response: {}
   }
 );
